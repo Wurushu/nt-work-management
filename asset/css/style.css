@@ -1,0 +1,164 @@
+html, body{
+	font-size: 20px;
+	/* font-family: consolas, cursive, "微軟正黑體"; */
+	font-family: "微軟正黑體";
+	color: #666;
+}
+div.login-div{
+	border: 1px #ddd solid;
+	margin: 0 auto;
+	width: 300px;
+	padding: 15px;
+}
+.title-1{
+	margin: 15px 0 0 40px;
+}
+.title-1>a{
+	color: #666;
+	text-decoration: none;
+}
+.title-2{
+	font-size: 40px;
+	margin-top: 0;
+	text-align: center;
+}
+.logout{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	text-align: center;
+}
+.logout>div{
+	display: inline-block;
+	vertical-align: top;
+}
+.main-content{
+	padding: 10px 20px;
+}
+.align-right{
+	text-align: right;
+}
+.align-left{
+	text-align: left;
+}
+.align-center{
+	text-align: center;
+}
+.table-user{
+	width: 80%;
+}
+div.mail-div{
+	margin: 0 auto;
+	width: 500px;
+}
+.manage-user-div{
+	text-align: center;
+}
+.login-div input[type="submit"]{
+	margin-top: 20px;
+}
+.font-color-g{
+	color: green;
+}
+.font-color-r{
+	color: red;
+}
+.font-color-b{
+	color: rgb(0, 120, 231);
+}
+.bg-color-g{
+	background-color: green;
+}
+.bg-color-r{
+	background-color: red;
+}
+.bg-color-b{
+	background-color: rgb(0, 120, 231);
+}
+td{
+	word-break: break-all;
+}
+.pure-table *{
+	font-size: 0.85em;
+}
+.work-mine{
+	transform: translate(-30px, -15px);
+	position: absolute;
+}
+.form-file{
+	font-size: 0.8em;
+	border: 0.5px #ccc solid;
+	padding: 2px;
+}
+.table-files *{
+	font-size: 1em;
+}
+.work-page-number{
+	width: 50%;
+	margin: 0 auto;
+	word-break: break-all;
+}
+.switch_asc{
+	padding: 3px 8px;
+	font-size: 13px;
+}
+.qa{
+	padding: 10px 50px;
+}
+.qa>p{
+	margin-bottom: 40px;
+	width: 700px;
+	border-top: 1px #ccc solid;
+	padding-top: 50px;
+}
+.qa>p>label{
+	font-size: 1.2em;
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bolder;
+}
+.qa>p>span{
+	font-size: .9em;
+}
+.qa_sendmail{
+	margin-top: 100px;
+}
+#goback{
+	position: absolute;
+	transform: translate(20px, 30px);
+	opacity: .65;
+}
+#goback:hover{
+	opacity: 1;
+}
+.work-manage-title{
+	font-size: 70%; 
+	font-weight: 500; 
+	font-style: oblique; 
+	transform: translate(150px,-12px);
+	margin: 0;
+	display: inline-block;
+}
+select, option{
+	z-index: 99;
+}
+.footer-p{
+	text-align:center;
+	font-style: oblique;
+	font-size: 60%;
+}
+@media screen and (max-width: 768px){
+	.title-1{
+		margin: auto;
+		text-align:center;
+	}
+	.logout{
+		position: relative;
+		right: auto;
+		top: auto;
+	}
+	.logout>div{
+		display: block;
+		margin-bottom: 3px;
+	}
+}
