@@ -1,5 +1,6 @@
 <?php
 	$rank_only = array(1,2,3);
+	$history_back = 'work.php';
 	include_once("_conf.php");	
 	$work_id = $_GET['work'];
 	$work = pdo_select("select `content` from `work` where `id`='$work_id'");

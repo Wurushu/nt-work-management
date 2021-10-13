@@ -3,7 +3,7 @@
 	include_once("_conf.php");
 	error_reporting(0);
 	
-	$post = htmlentities($_POST['post']);
+	$post = nl2br(htmlentities($_POST['post']));
 	$user = $_SESSION['id'];
 	$date = date('Y-m-d_H點i分',strtotime('now')+100);
 	

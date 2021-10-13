@@ -25,6 +25,13 @@
 		3=>'#000'
 	);
   
+	$team_color = array(
+		0=>'#FF8C00', 
+		1=>'#32CD32',
+		2=>'#6495ED',
+		3=>'#800080',
+	);
+
 	$sort_name_zh = array(
 		1=>'編號',
 		2=>'工作內容',
@@ -43,6 +50,11 @@
 		6=>'complete',
 	);
 	
+	$user_team = array(
+		1=>'實習組',
+		2=>'就業輔導組'
+	);
+		
 	$year_path = 'year_work/year.txt';
 	$work_path = 'year_work/work.txt';
 	
@@ -50,7 +62,7 @@
 	function pdo_select($sql){
 		global $pdo;
 		$rs = $pdo->query($sql);
-		return $rs->fetchAll();
+		return $rs->fetchAll(2);
 	}
 	
 	//set

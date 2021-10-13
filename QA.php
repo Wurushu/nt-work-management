@@ -1,11 +1,13 @@
 <?php
 	$rank_only = array('n',1,2,3);
+	$history_back = 'work.php';
 	include_once("_conf.php");
 	
 	if(!empty($_POST['send'])){
 		$to = 'test_receive@gmail.com';
 		$title = 'NT_WORK_QA';
-		$content = $_POST['content'];
+		$content = $_SESSION['name'] . "<hr />";
+		$content .= $_POST['content'];
 
 		include('mailer/PHPMailerAutoload.php');
 		$mail = new PHPMailer;
@@ -16,6 +18,7 @@
 		$mail->Username = 'test_send@gmail.com';                 // SMTP username
 		$mail->Password = 'test_send_password';                           // SMTP password
 		$mail->SMTPSecure = 'ssl';                            // Enable TLS encryption, `ssl` also accepted
+		$mail->isHTML(true);
 		$mail->Port = 465;                                    // TCP port to connect to
 		$mail->CharSet = "utf-8";                       
 		$mail->Encoding = "base64";
@@ -28,10 +31,10 @@
 
 		if(!$mail->send()) {
 			echo '<script>alert(\'寄信失敗\');</script>';
-			header('refresh: 0;');
-		} else {
-			header('refresh: 0;');
+		}else{
+			echo '<script>alert(\'已寄送\');</script>';
 		}
+		echo '<script>history.go(-1);</script>';
 	}
 ?>
 <!doctype html>
@@ -60,7 +63,7 @@
 			</p>
 			<p>
 				<label>Q：要怎麼編輯我的個人資料？</label>
-				<span>只有在註冊會員時才能填寫會員資料，如果需要更改，需請主任進行編輯。</span>
+				<span>只有在註冊會員時才能填寫個人資料，如果需要更改，需請主任進行編輯。<br><br>另外，設定的密碼會經過加密，沒有人能知道密碼<br>只能讓主任直接設定新密碼。</span>
 			</p>
 			<p>
 				<label>Q：為什麼有些工作沒有修改或刪除的按鈕？</label>

@@ -7,7 +7,6 @@
 			$cancel = $_GET['cancel'];
 			$rs2 = $pdo->prepare("update `work` set `complete` = 0, `ps`='' where `id` = '$cancel'");
 			$rs2->execute();
-			header('refresh: 0; url=work.php?page='.$_GET['page'].'&sort='.$_GET['sort'].'&asc='.$_GET['asc'].'&team_group='.$_GET['team_group']);
 		}
 		if(isset($_GET['complete'])){
 			$complete = $_GET['complete'];
@@ -15,9 +14,8 @@
 			$ps = '['.$tw_year.'/'.date('m/d',strtotime('now')+100).']';
 			$rs = $pdo->prepare("update `work` set `complete` = 1, `ps`='$ps' where `id` = '$complete'");
 			$rs->execute();
-			echo "<script>window.onload = function(){ $('.complete-animation').addClass('show'); }</script>";
-			header('refresh: 1.2; url=work.php?page='.$_GET['page'].'&sort='.$_GET['sort'].'&asc='.$_GET['asc'].'&team_group='.$_GET['team_group']);
 		}
+		header('refresh: 0; url=work.php');
 	}
 	
 	$sort = !empty($_GET['sort']) ? $_GET['sort'] : '';
@@ -28,17 +26,11 @@
 	$page = !empty($_GET['page']) ? $_GET['page'] : $total_page;
 	
 	if($sort == 6){
-		$orderby = " `complete` {$asc}, `overday`";
+		$orderby = "order by `complete` {$asc}, `overday`";
 	}elseif($sort != ''){
-		$orderby = " `". $sort_name_en[$sort] ."` {$asc}";
+		$orderby = "order by `". $sort_name_en[$sort] ."` {$asc}";
 	}else{
-		$orderby = " `id` ASC";
-	}
-	if($team_group){
-		$orderby = ',' . $orderby;
-		$orderby = str_replace('`id`','b.`id`',$orderby);
-	}else{		
-		$orderby = 'order by' . $orderby;
+		$orderby = 'order by `id` ASC';
 	}
 	
 	$offset = 'offset ';
@@ -59,6 +51,14 @@
 	<script>
 		$(function(){
 			$(document).on('click','.work-cancel',work_cancel);
+			<?php
+				if(isset($_GET['edit_work']) && $_GET['edit_work'] == 1){
+					if(!empty($_GET['complete'])){
+						echo "$('.complete-animation').addClass('show');";
+					}
+					header('refresh: 1.2; url=work.php');
+				}
+			?>
 			$('.work-form').scrollTop(99999);
 		})
 		function work_cancel(){
@@ -75,7 +75,6 @@
 				alert('未填寫留言');
 				return; 
 			}
-			$('.board-submit').css('visibility','hidden');
 			$.ajax({
 				url: 'ajax_board_post.php',
 				type: 'post',
@@ -83,8 +82,6 @@
 					post: board_post,
 				},
 				success: function(r){
-					$('.board-submit').css('visibility','');
-					$('.board-post').val('');
 					$('.board>.board-content').prepend(r);
 				}
 			});
@@ -221,9 +218,6 @@
 			width: 100%;
 			min-width: 1000px;
 		}
-		.work-mine{
-			display: inline;
-		}
 	</style>
 </head>
 <body>
@@ -275,14 +269,9 @@
 				<div class="board-content">
 					<?php
 						foreach(pdo_select("select * from `board` order by `id` DESC limit 200") as $v){
-							$board_user = pdo_select("select `name` from `user` where `id` = '".$v['user']."';");
-							if(count($board_user) == 0){
-								$board_user = array('name'=>'<span style="color: #f00;">無</span>');
-							}else{
-								$board_user = $board_user[0];				
-							}
+							$user = pdo_select("select `name` from `user` where `id` = '".$v['user']."';")[0];
 							$del = $_SESSION['id'] == $v['user'] ? '<input type="button" class="board-del pure-button button-error" value="刪除" onclick="board_del('.$v['id'].',this);">' : '';
-							echo '<div class="board-one">'.$v['post'].'<p class="board-one-who">'.$del.'('.$v['date'].' '.$board_user['name'].')</p></div>';
+							echo '<div class="board-one">'.$v['post'].'<p class="board-one-who">'.$del.'('.$v['date'].' '.$user['name'].')</p></div>';
 						}
 					?>
 				</div>
@@ -303,24 +292,111 @@
 						</tr>
 					</thead>
 					<tbody>
-						<?php	
-								if($team_group){
-									$work_select = "SELECT a.*, b.* FROM `user` a,`work` b where a.`id` = b.`work_user` ORDER BY a.team".$orderby." limit 50 {$offset}";
-									$last_team = '';
-								}else{
-									$work_select = "select * from `work` where `dead` = 0 {$orderby} limit 50 {$offset}";
+						<?php
+							if($team_group){
+								$user_select = pdo_select("select * from `user` where `rank` = 1 || `rank` = 2 order by `rank`");
+								foreach($user_select as $k2 => $v2){
+									$work_select = pdo_select("select * from `work` where `dead` = 0 && (`work_user` = '".$v2['id']."' || `work_user` in (select `id` from `user` where `rank` != 2 && `belong` = '".$v2['id']."'))");
+									if($k2 != 0){ echo '<tr style="background-color: #fff; border: 1px #fff solid; height: 80px;"><td colspan="9"></td></tr>'; }
+									foreach($work_select as $v){
+										$work_user = pdo_select("select * from `user` where `id` = '". $v['work_user'] ."'");
+										$order_user = pdo_select("select * from `user` where `id` = '". $v['order_user'] ."'");
+										if(count($work_user) == 0){
+											$work_user['name'] = '<span class="font-color-r">無承辦人</span>';
+											$work_user['belong'] = '#$%@^#$%&^%*^&(*&)$*#^$!@#$@%##$^$%&&^#(%)';
+										}else{
+											$work_user = $work_user[0];
+										}
+						?>
+										<tr>
+											<td>
+												<?php
+													if($v['work_user'] == $_SESSION['id']){
+														echo '<span style="font-size: 40px;" class="fa fa-angle-double-right font-color-b work-mine"></span>'.$v['id'];
+													}else{
+														echo $v['id'];
+													}
+												?>
+											</td>
+											<td>
+												<?= $v['content']; ?>
+											</td>
+											<td>
+												<?php
+													if(count(pdo_select("select * from `file` where `work` = '". $v['id'] ."'")) == 0){
+														echo '無';
+													}else{
+														echo '<a href="files.php?work='. $v['id'] .'" style="text-align: center;"><span class="fa fa-file" style="font-size: 30px;"></span></a>';	
+													}
+												?>
+											</td>
+											<td>
+												<?php
+													if($v['overday'] != '0000-00-00'){
+														if(strtotime($v['overday']) - strtotime('now') < 0){
+															echo '<span class="fa fa-exclamation font-color-r"> '. $v['overday'] .'<br>(已逾期)</span>';
+														}elseif((strtotime($v['overday']) - strtotime('now')) < 259200 && $v['complete'] == 0){
+															echo '<span class="fa fa-exclamation font-color-r"> '. $v['overday'] .'</span>';
+														}else{
+															echo $v['overday'];
+														}
+													}else{
+														echo '無';
+													}
+												?>
+											</td>
+											<td><?=$v['post_time']?></td>
+											<td><?=$work_user['name']?></td>
+											<td>
+												<?php
+													if(count($order_user) != 0){
+														echo $order_user[0]['name'];
+													}
+												?>
+											</td>
+											<td>
+												<?php
+													if($v['complete'] == 1){
+														echo '<span style="font-size: 6px;">'.$v['ps'].'</span><br>';
+														echo '<span class="button-xlarge"><span class="font-color-g fa fa-check"></span></span>';
+														if($v['work_user'] == $_SESSION['id']){
+															echo '<input type="button" class="pure-button button-cancel pure-button-primary" value="取消" onclick="if(confirm(\'確認取消?\')){location.href = \'work.php?edit_work=1&cancel='. $v['id'] .'\';};">';
+														}
+													}else{
+														if($v['work_user'] == $_SESSION['id']){
+														echo '<div class="button-comp-div" onclick="location.href = \'work.php?edit_work=1&complete='. $v['id'] .'\';"><input type="checkbox" class="pure-button button-comp pure-button-primary"></div>';
+														}
+													}
+												?>
+											</td>
+											<td>
+												<?php 
+													if($v['order_user'] == $_SESSION['id'] || $_SESSION['rank'] == 1){
+												?>
+														<input type="button" class="pure-button button-xsmall button-success" value="修改" onclick="location.href = 'edit_work.php?id=<?=$v['id']?>'"><br>
+														<input type="button" class="pure-button button-xsmall button-error" value="刪除" onclick="if(confirm('是否要刪除?')){ location.href = 'del_work.php?id=<?=$v['id']?>'; }"><br>
+												<?php 
+													} 
+												?>
+												<?php
+														if(false){// if($v['complete'] == 0 && ($_SESSION['id'] == $work_user['belong'] || $_SESSION['rank'] == 1)){
+														
+												?>
+															<input type="button" class="pure-button button-xsmall pure-button-primary button-warning" value="提醒" onclick="location.href = 'send_mail.php?id=<?=$v['id']?>'"><br>
+												<?php
+														}
+												?>
+											</td>
+										</tr>
+						<?php
+									}
 								}
-								$work_select = pdo_select($work_select);
-								
+							}else{
+								$work_select = pdo_select("select * from `work` where `dead` = 0 {$orderby} limit 50 {$offset}");
 								foreach($work_select as $v){
 									$work_user = pdo_select("select * from `user` where `id` = '". $v['work_user'] ."'");
 									$order_user = pdo_select("select * from `user` where `id` = '". $v['order_user'] ."'");
-									if($team_group){
-										if($last_team != '' && !empty($work_user[0]['team']) && $last_team != $work_user[0]['team']){
-											echo '<tr style="height: 50px; background-color: #f9f9f9;"><td colspan="99"></td></tr>';
-										}
-										$last_team = $work_user[0]['team'];							
-									}
+								
 									if(count($work_user) == 0){
 										$work_user['name'] = '<span class="font-color-r">無承辦人</span>';
 										$work_user['belong'] = '#$%@^#$%&^%*^&(*&)$*#^$!@#$@%##$^$%&&^#(%)';
@@ -328,7 +404,7 @@
 										$work_user = $work_user[0];
 									}
 						?>		
-									<tr <?php if($team_group){ echo 'style="border: 4px solid; border-color: '.$team_color[$last_team].';"'; } ?>>
+									<tr>
 										<td>
 											<?php
 												if($v['work_user'] == $_SESSION['id']){
@@ -353,7 +429,7 @@
 										<td>
 											<?php
 												if($v['overday'] != '0000-00-00'){
-													if(strtotime($v['overday']) - strtotime('now') < 0 && $v['complete'] == 0){
+													if(strtotime($v['overday']) - strtotime('now') < 0){
 														echo '<span class="fa fa-exclamation font-color-r"> '. $v['overday'] .'<br>(已逾期)</span>';
 													}elseif((strtotime($v['overday']) - strtotime('now')) < 259200 && $v['complete'] == 0){
 														echo '<span class="fa fa-exclamation font-color-r"> '. $v['overday'] .'</span>';
@@ -380,11 +456,11 @@
 													echo '<span style="font-size: 6px;">'.$v['ps'].'</span><br>';
 													echo '<span class="button-xlarge"><span class="font-color-g fa fa-check"></span></span>';
 													if($v['work_user'] == $_SESSION['id']){
-														echo '<input type="button" class="pure-button button-cancel pure-button-primary" value="取消" onclick="location.href = \'work.php?edit_work=1&cancel='. $v['id'] .'&sort='. $sort .'&asc='. $asc .'&page='. $page .'&team_group='. $team_group .'\';">';
+														echo '<input type="button" class="pure-button button-cancel pure-button-primary" value="取消" onclick="location.href = \'work.php?edit_work=1&cancel='. $v['id'] .'\';">';
 													}
 												}else{
 													if($v['work_user'] == $_SESSION['id']){
-														echo '<div class="button-comp-div" onclick="location.href = \'work.php?edit_work=1&complete='. $v['id'] .'&sort='. $sort .'&asc='. $asc .'&page='. $page .'&team_group='. $team_group .'\';"><input type="checkbox" class="pure-button button-comp pure-button-primary"></div>';
+														echo '<div class="button-comp-div" onclick="location.href = \'work.php?edit_work=1&complete='. $v['id'] .'\';"><input type="checkbox" class="pure-button button-comp pure-button-primary"></div>';
 													}
 												}
 											?>
@@ -409,18 +485,19 @@
 									</tr>
 						<?php
 								}
+							}
 						?>
 					</tbody>
 				</table>
 				<div>
 					<div class="align-center work-page-number">
 						<?php
-							if($total_page > 1){
+							if($total_page > 1 && !$team_group){
 								for($i=1; $i<=$total_page; $i++){
 									if($i == $page){
 										echo '<span style="font-size: 40px;" class="font-color-r">'.$i.'</span> ';
 									}else{
-										echo '<a href="work.php?sort='.$sort.'&asc='.$asc.'&page='.$i.'&team_group='.$team_group.'">'.$i.'</a> ';
+										echo '<a href="work.php?sort='.$sort.'&asc='.$asc.'&page='.$i.'">'.$i.'</a> ';
 									}
 								} 
 							}

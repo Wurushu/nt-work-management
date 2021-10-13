@@ -20,22 +20,31 @@
 						<th>姓名</th>
 						<th>email</th>
 						<th>職位</th>
-						<th>上級人員</th>
+						<!-- <th>上級人員</th> -->
+						<th>組別</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach(pdo_select("select * from `user` order by `rank`, `belong`") as $v){ ?>
+					<?php foreach(pdo_select("select * from `user` order by `team`, `rank`") as $v){ ?>
 						<tr>
 							<td><?=$v['user']?></td>
 							<td><?=$v['name']?></td>
 							<td><?=$v['email']?></td>
 							<td><?=$rank_name[$v['rank']]?></td>
+							<!--
 							<td><?php
-								$belong = pdo_select("select `name` from `user` where `id` = '". $v['belong'] ."'");
-								if(count($belong) != 0){
-									echo $belong[0]['name'];
-								}
+								// $belong = pdo_select("select `name` from `user` where `id` = '". $v['belong'] ."'");
+								// if(count($belong) != 0){
+									// echo $belong[0]['name'];
+								// }
+							?></td>
+							-->
+							<td><?php
+								echo (!empty($user_team[$v['team']])) ? $user_team[$v['team']] : '';
+								// echo '<pre>';
+								// var_dump($v);
+								// echo '</pre>';
 							?></td>
 							<td>
 								<input type="button" class="pure-button button-small button-success" value="修改" onclick="location.href = 'edit_user.php?id=<?=$v['id']?>'">

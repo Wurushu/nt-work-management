@@ -82,8 +82,8 @@ td{
 	font-size: 0.85em;
 }
 .work-mine{
-	transform: translate(-30px, -15px);
-	position: absolute;
+	transform: translate(-10px, -15px);
+	display: inline;
 }
 .form-file{
 	font-size: 0.8em;
@@ -97,6 +97,7 @@ td{
 	width: 50%;
 	margin: 0 auto;
 	word-break: break-all;
+	font-size: 30px;
 }
 .switch_asc{
 	padding: 3px 8px;
@@ -146,6 +147,14 @@ select, option{
 	text-align:center;
 	font-style: oblique;
 	font-size: 60%;
+}
+.footer-p+form{
+	text-align:center;
+	font-style: oblique;
+	font-size: 60%;
+}
+.pure-button-primary.pure-button-primary2{
+	background-color: rgb(22, 155, 255);
 }
 @media screen and (max-width: 768px){
 	.title-1{

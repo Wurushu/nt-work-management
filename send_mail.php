@@ -1,5 +1,6 @@
 <?php
 	$rank_only = array(1,2);
+	$history_back = 'work.php';
 	include_once("_conf.php");
 	
 	$work_id = $_GET['id'];

@@ -1,5 +1,6 @@
 <?php
 	$rank_only = array(1);
+	$history_back = 'manage_user.php';
 	include_once("_conf.php");
 	
 	if(isset($_POST['add'])){
@@ -8,14 +9,15 @@
 		$name = $_POST['name'];
 		$email = $_POST['email'];
 		$rank = $_POST['rank'];
-		$belong = $_POST['belong'];
+		// $belong = $_POST['belong'];
+		$team = $_POST['team'];
 		
-		if($rank == 2){
-			$belong = pdo_select("select `id` from `user` where `rank` = 1")[0]['id'];
-		}
+		// if($rank == 2){
+			// $belong = pdo_select("select `id` from `user` where `rank` = 1")[0]['id'];
+		// }
 		
 		if(count(pdo_select("select * from `user` where `user` = '$user';")) < 1){
-			$rs = $pdo->prepare("insert into `user`(`user`,`pd`,`name`,`email`,`rank`,`belong`) values('$user','$pd','$name','$email','$rank','$belong');");
+			$rs = $pdo->prepare("insert into `user`(`user`,`pd`,`name`,`email`,`rank`,`team`) values('$user','$pd','$name','$email','$rank','$team');");
 			$rs->execute();
 			header('location: manage_user.php');
 		}else{
@@ -28,6 +30,7 @@
 <html>
 <head>
 	<?php include_once('head.php'); ?>
+	<!--
 	<script>
 		$(function(){
 			$('#rank').on('change',change_rank);
@@ -40,6 +43,7 @@
 			}
 		}
 	</script>
+	-->
 </head>
 <body>
 	<?php include_once('header.php'); ?>
@@ -63,6 +67,16 @@
 					<label for="name">姓名</label>
 					<input id="name" name="name" type="text" placeholder="name" required>
 				</div>
+				<div id="team" class="pure-control-group">
+					<label for="team">組別</label>
+					<select name="team">
+						<?php 
+							foreach($user_team as $k=>$v){
+								echo '<option value="'.$k.'">'.$v.'</option>';
+							}
+						?>
+					</select>
+				</div>
 				<div id="rank" class="pure-control-group">
 					<label for="rank">職位</label>
 					<select name="rank">
@@ -70,16 +84,18 @@
 						<option value="2">組長</option>
 					</select>
 				</div>
+				<!--
 				<div id="belong" class="pure-control-group">
 					<label for="belong">組長為</label>
 					<select name="belong">
 						<?php
-							foreach(pdo_select("select * from `user` where `rank` = 2") as $v){
-								echo '<option value="'. $v['id'] .'">'. $v['name'] .'</option>';
-							}
+							// foreach(pdo_select("select * from `user` where `rank` = 2") as $v){
+								// echo '<option value="'. $v['id'] .'">'. $v['name'] .'</option>';
+							// }
 						?>
 					</select>
 				</div>
+				-->
 				<div class="pure-controls">
 					<button type="submit" class="pure-button pure-button-primary">新增</button>
 					<input type="hidden" name="add" value="1">

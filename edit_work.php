@@ -1,5 +1,6 @@
 <?php
 	$rank_only = array(1,2,3);
+	$history_back = 'work.php';
 	include_once("_conf.php");
 	
 	$work_id = $_GET['id'];
@@ -147,7 +148,7 @@
 					<select name="work_user" id="work_user">
 						<option value="<?=$_SESSION['id']?>">自己</option>
 						<?php
-							foreach(pdo_select("select * from `user` where (`belong` = '". $_SESSION['user'] . "' || ".$_SESSION['rank']."=1) && `rank` != 1 order by `rank`") as $v){
+							foreach(pdo_select("select * from `user` where `team`='". $_SESSION['team'] ."' && `rank`=3 order by `rank`") as $v){
 								echo '<option value="'. $v['id'] .'">'. $v['name'] .'('. $rank_name[$v['rank']] .')</option>';
 							}
 						?>

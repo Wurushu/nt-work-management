@@ -1,5 +1,6 @@
 <?php
 	$rank_only = array(1);
+	$history_back = 'manage_user.php';
 	include_once("_conf.php");
 
 	$id = $_GET['id'];
@@ -11,21 +12,21 @@
 		$pd = trim($_POST['pd']) == '' ? '' : ' `pd`=\''.hash('sha256',$_POST['pd']).'\',';
 		$email = $_POST['email'];
 		$rank = $_POST['rank'];
-		$belong = $_POST['belong'];
+		// $belong = $_POST['belong'];
 		
-		if($rank == 2){
-			$belong = pdo_select("select `id` from `user` where `rank` = 1")[0]['id'];
-		}
+		// if($rank == 2){
+			// $belong = pdo_select("select `id` from `user` where `rank` = 1")[0]['id'];
+		// }
 		
-		if(isset($_POST['rank_1']) && $_POST['rank_1'] == 1){
-			$belong = '';
-			$rank = 1;
-		}
+		// if(isset($_POST['rank_1']) && $_POST['rank_1'] == 1){
+			// $belong = '';
+			// $rank = 1;
+		// }
 		
 		if($user == $or_user || count(pdo_select("select * from `user` where `user` = '$user';")) < 1){
-			$rs = $pdo->prepare("update `user` set `user`='$user',$pd `name`='$name', `email`='$email', `rank`='$rank', `belong`='$belong' where `id` ='$id';");
+			$rs = $pdo->prepare("update `user` set `user`='$user',$pd `name`='$name', `email`='$email', `rank`='$rank', `team`='$team' where `id` ='$id';");
 			$rs->execute();
-			if(isset($_POST['rank_1']) && $_POST['rank_1'] == 1){
+			if(isset($_POST['rank']) && $_POST['rank'] == 1){
 				echo "<script>alert('需重新登入');</script>";	
 				header('refresh: 0; url=index.php');
 			}else{
@@ -41,7 +42,9 @@
 		$name = $or['name'];
 		$email = $or['email'];
 		$rank = $or['rank'];
-		$belong = $or['belong'];		
+		// $belong = $or['belong'];		
+		$belong = '';		
+		$team = $or['team'];
 	}
 ?>
 <!doctype html>
@@ -50,7 +53,7 @@
 	<?php include_once('head.php'); ?>
 	<script>
 		$(function(){
-			$('#rank').on('change',change_rank);
+			// $('#rank').on('change',change_rank);
 			$('#belong option[value="<?=$belong?>"]').prop('selected',true);
 			<?php 
 				if($rank == 2 || $rank == 1){
@@ -58,13 +61,13 @@
 				}
 			?>
 		})
-		function change_rank(){
-			if($('#rank>select[name="rank"]').val() == '2'){
-				$('#belong').hide();
-			}else{
-				$('#belong').show();
-			}
-		}
+		// function change_rank(){
+			// if($('#rank>select[name="rank"]').val() == '2'){
+				// $('#belong').hide();
+			// }else{
+				// $('#belong').show();
+			// }
+		// }
 	</script>
 </head>
 <body>
@@ -90,6 +93,20 @@
 					<input id="name" name="name" type="text" value="<?=$name?>" placeholder="name" required>
 				</div>
 				<?php if($rank != 1){ ?>
+					<div id="team" class="pure-control-group">
+						<label for="team">組別</label>
+						<select name="team">
+							<?php 
+								foreach($user_team as $k=>$v){
+									if($k == $team){
+										echo '<option value="'.$k.'" selected>'.$v.'</option>';
+									}else{
+										echo '<option value="'.$k.'">'.$v.'</option>';
+									}
+								}
+							?>
+						</select>
+					</div>
 					<div id="rank" class="pure-control-group">
 						<label for="rank">職位</label>
 						<select name="rank">
@@ -98,18 +115,20 @@
 						</select>
 					</div>
 				<?php }else{ ?>
-					<input name="rank_1" type="hidden" value="1">
+					<input name="rank" type="hidden" value="1">
 				<?php } ?>
+				<!--
 				<div id="belong" class="pure-control-group">
 					<label for="belong">組長為</label>
 					<select name="belong">
 						<?php
-							foreach(pdo_select("select * from `user` where `rank` = 2 and `id` != '$id'") as $v){
-								echo '<option value="'. $v['id'] .'">'. $v['name'] .'</option>';
-							}
+							// foreach(pdo_select("select * from `user` where `rank` = 2 and `id` != '$id'") as $v){
+								// echo '<option value="'. $v['id'] .'">'. $v['name'] .'</option>';
+							// }
 						?>
 					</select>
 				</div>
+				-->
 				<div class="pure-controls">
 					<button type="submit" class="pure-button pure-button-primary">確認修改</button>
 					<input type="hidden" name="edit" value="1">

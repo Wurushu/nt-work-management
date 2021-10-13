@@ -20,6 +20,7 @@
 			$_SESSION['user'] = $user;
 			$_SESSION['name'] = $rs[0]['name'];
 			$_SESSION['rank'] = $rs[0]['rank'];
+			$_SESSION['team'] = $rs[0]['team'];
 			
 			header("location: work.php");
 		}else{
@@ -58,6 +59,7 @@
 			</form>
 		</div>
 	</div>
+	<p class="align-center font-color-r" style="font-size: 70%; transform: translateY(80px)">(若無法登入，請檢查瀏覽器Cookie功能是否開啟)</p>
 	<?php include('footer.php') ?>
 </body>
 </html>

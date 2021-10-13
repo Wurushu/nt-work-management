@@ -1,5 +1,6 @@
 <?php
 	$rank_only = array(1,2);
+	$history_back = 'work.php';
 	include_once("_conf.php");
 	
 	if(!empty($_POST['send'])){
@@ -70,8 +71,13 @@
 						<?php
 							$last_user = 'gggggg';
 							$user_count = 0;
-							foreach(pdo_select("select * from `work` order by `work_user`") as $v){
-								$work_user = pdo_select("select * from `user` where `id` = '". $v['work_user'] ."'")[0];
+							foreach(pdo_select("select * from `work` where `dead` = 0 order by `work_user`") as $v){
+								$work_user = pdo_select("select * from `user` where `id` = '". $v['work_user'] ."'");
+								if(count($work_user) == 0){
+									continue;
+								}else{
+									$work_user = $work_user[0];
+								}
 								$overday = $v['overday'];
 								if($v['overday'] == '0000-00-00' || (strtotime($v['overday']) - strtotime('now')) > 259200 || $v['complete'] != 0){
 									continue;

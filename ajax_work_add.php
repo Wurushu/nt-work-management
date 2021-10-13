@@ -10,7 +10,7 @@
 		$overday = $_POST['overday'];
 		$work_user = $_POST['work_user'];
 		$order_user = $_SESSION['id'];
-		$post_time = date('Y-m-d');
+		$post_time = date('Y-m-d',strtotime('now')+100);
 
 		if($overday != '' && strtotime($overday) <= (strtotime('now')-86400)){
 			$re->status = 'no';
@@ -21,8 +21,10 @@
 		$re->msg = '資料錯誤';
 	}
 	if($re->status == 'ok'){
+		// foreach(range(1,199) as $i){
 		$rs = $pdo->prepare("insert into `work`(`content`,`overday`,`work_user`,`order_user`,`post_time`) values('$content','$overday','$work_user','$order_user','$post_time');");
 		$rs->execute();
+		// }
 		$re->id = $pdo->lastInsertId();
 	}
 	echo json_encode($re);
