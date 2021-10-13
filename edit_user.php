@@ -12,6 +12,8 @@
 		$pd = trim($_POST['pd']) == '' ? '' : ' `pd`=\''.hash('sha256',$_POST['pd']).'\',';
 		$email = $_POST['email'];
 		$rank = $_POST['rank'];
+		$team = $_POST['team'];
+		
 		// $belong = $_POST['belong'];
 		
 		// if($rank == 2){

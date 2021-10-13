@@ -34,8 +34,8 @@
 
 	$sort_name_zh = array(
 		1=>'編號',
-		2=>'工作內容',
-		3=>'完成日期',
+		2=>'發佈日期',
+		3=>'限辦日期',
 		4=>'承辦人',
 		5=>'審核',
 		6=>'是否完成',
@@ -43,7 +43,7 @@
 
 	$sort_name_en = array(
 		1=>'id',
-		2=>'content',
+		2=>'post_time',
 		3=>'overday',
 		4=>'work_user',
 		5=>'order_user',
@@ -52,7 +52,8 @@
 	
 	$user_team = array(
 		1=>'實習組',
-		2=>'就業輔導組'
+		2=>'就業輔導組',
+		3=>'技能檢定組'
 	);
 		
 	$year_path = 'year_work/year.txt';

@@ -102,6 +102,16 @@
 
 		}
 	</script>
+	<script src="//cdn.jsdelivr.net/webshim/1.14.5/polyfiller.js"></script>
+	<script>
+		webshims.setOptions('forms-ext', {types: 'date'});
+		webshims.polyfill('forms forms-ext');
+	</script>
+	<style>
+		.ws-popover-opener{
+			display: none;
+		}
+	</style>
 </head>
 <body style="height: 1000px;">
 	<?php include_once('header.php'); ?>
@@ -132,14 +142,14 @@
 				</div>
 				<div class="pure-control-group">
 					<label for="overday">限辦日期(可不填)</label>
-					<input id="overday" name="overday" type="date" placeholder="期限">
+					<input id="overday" name="overday" type="date" placeholder="期限" />
 				</div>
 				<div class="pure-control-group">
 					<label for="work_user">承辦人</label>
 					<select name="work_user" id="work_user">
 						<option value="<?=$_SESSION['id']?>">自己</option>
 						<?php
-							foreach(pdo_select("select * from `user` where `team`='". $_SESSION['team'] ."' && `rank`=3 order by `rank`") as $v){
+							foreach(pdo_select("select * from `user` where ((`team`='". $_SESSION['team'] ."' && `rank`=3) || ". $_SESSION['rank'] ."=1) && `rank`!=1 order by `rank`") as $v){
 								echo '<option value="'. $v['id'] .'" style="font-size: 18px;">'. $v['name'] .'('. $rank_name[$v['rank']] .')</option>';
 							}
 						?>
